@@ -1,165 +1,324 @@
+
 <!DOCTYPE html>
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#173d32">
 <title>Mikołajkowe losowanie 🎅</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 20px;
   font-family: Arial, sans-serif;
   color: #fff7e8;
   background:
-    radial-gradient(circle at 20% 10%, #35634b 0, transparent 35%),
+    radial-gradient(circle at 15% 10%, #35634b 0, transparent 35%),
     linear-gradient(145deg, #102c25, #173e31 60%, #10251f);
 }
+
 .card {
   width: 100%;
-  max-width: 430px;
-  padding: 32px 24px;
+  max-width: 440px;
+  padding: 32px 25px;
   text-align: center;
-  background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.17);
-  border-radius: 24px;
+  background: rgba(255,255,255,.09);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 25px;
   box-shadow: 0 20px 60px #0005;
 }
-.santa { font-size: 64px; }
-h1 { font-size: 29px; margin: 12px 0 8px; }
-.subtitle { color: #e7d9bb; line-height: 1.6; }
-select, button {
-  width: 100%;
-  padding: 16px;
-  margin-top: 20px;
-  border-radius: 12px;
-  font-size: 16px;
+
+.santa {
+  font-size: 65px;
+  margin-bottom: 8px;
 }
-select {
-  color: #23352b;
-  background: #fffaf0;
-  border: 0;
+
+h1 {
+  font-size: 29px;
+  margin: 10px 0;
 }
+
+.subtitle {
+  color: #e7d9bb;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.divider {
+  height: 1px;
+  background: #ffffff25;
+  margin: 25px 0;
+}
+
 button {
-  color: white;
+  width: 100%;
+  padding: 17px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 13px;
   background: #b52e36;
-  border: 0;
+  color: white;
+  font-size: 17px;
   font-weight: bold;
   cursor: pointer;
   transition: .2s;
 }
-button:hover { background: #d13d45; }
-button:disabled { opacity: .55; cursor: wait; }
+
+button:hover:not(:disabled) {
+  background: #d13d45;
+  transform: translateY(-2px);
+}
+
+button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
 #result {
   display: none;
   margin-top: 25px;
-  padding: 22px 12px;
-  border-radius: 16px;
+  padding: 25px 15px;
+  border-radius: 17px;
   background: #fff6e4;
   color: #203c2d;
+  animation: appear .5s ease;
 }
-#result strong {
+
+#result .recipient {
   display: block;
-  margin-top: 10px;
+  margin: 18px 0;
   color: #a72530;
-  font-size: 30px;
+  font-size: 34px;
+  font-weight: bold;
+  overflow-wrap: anywhere;
 }
-#error { color: #ffd0d0; margin-top: 16px; }
-.footer { margin-top: 25px; font-size: 12px; color: #c5d3c8; }
+
+.gift {
+  font-size: 45px;
+}
+
+#error {
+  display: none;
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 12px;
+  background: #8b2929;
+  color: white;
+  line-height: 1.5;
+}
+
+.footer {
+  margin-top: 28px;
+  font-size: 12px;
+  color: #c5d3c8;
+  line-height: 1.7;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 </style>
 </head>
+
 <body>
+
 <main class="card">
+
   <div class="santa">🎅</div>
+
   <h1>Mikołajkowe losowanie</h1>
+
   <p class="subtitle">
     Rodzinna edycja 2026 🎄<br>
-    Wybierz swoje imię i sprawdź,<br>
-    komu przygotujesz prezent!
+    Czas odkryć, komu przygotujesz prezent!<br>
+    Pamiętaj – to nasza mała tajemnica 🤫
   </p>
 
-  <select id="name">
-    <option value="">Wybierz swoje imię...</option>
-    <option>Antek</option>
-    <option>Marek</option>
-    <option>Dominika</option>
-    <option>Alina</option>
-    <option>Marysia</option>
-  </select>
+  <div class="divider"></div>
 
-  <button id="draw">🎁 Wylosuj osobę</button>
+  <div id="welcome">
+    <div style="font-size:42px">🎁</div>
+
+    <p class="subtitle">
+      Twój indywidualny link jest gotowy.<br>
+      Kliknij poniżej, aby wylosować osobę.
+    </p>
+  </div>
+
+  <button id="draw">
+    🎁 Wylosuj osobę
+  </button>
 
   <div id="result">
-    <div>W tym roku robisz prezent dla:</div>
-    <strong id="recipient"></strong>
-    <p>Ho, ho, ho! Nie zdradź nikomu swojej tajemnicy! 🤫</p>
+    <div class="gift">🎉🎁🎄</div>
+
+    <p>W tym roku kupujesz prezent dla:</p>
+
+    <span class="recipient" id="recipient"></span>
+
+    <p>
+      Ho, ho, ho! Nie zdradź nikomu swojej tajemnicy! 🤫
+    </p>
   </div>
 
   <div id="error"></div>
 
   <div class="footer">
-    Każdy losuje tylko raz. Wynik jest zapisany na serwerze.
-    <br>Wesołych Mikołajek! ❤️
+    Każdy uczestnik ma tylko jeden los.<br>
+    Wynik jest przypisany do Twojego indywidualnego linku.<br><br>
+    Wesołych Mikołajek! ❤️
   </div>
+
 </main>
 
 <script>
-const SUPABASE_URL = "https://zmprlwgecqvifmshqphp.supabase.co";
-const SUPABASE_KEY = "sb_publishable_Jfj-v6AOhVj-NSZvkqLUgg_oAQ29-0f";
+
+// =====================================
+// KONFIGURACJA SUPABASE
+// =====================================
+
+const SUPABASE_URL =
+  "https://zmprlwgecqvifmshqphp.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_Jfj-v6AOhVj-NSZvkqLUgg_oAQ29-0f";
+
+// =====================================
+// POŁĄCZENIE Z BAZĄ
+// =====================================
 
 const db = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
 
+// =====================================
+// POBIERANIE INDYWIDUALNEGO TOKENU
+// =====================================
+
+const params = new URLSearchParams(
+  window.location.search
+);
+
+const token = params.get("token");
+
 const button = document.getElementById("draw");
-const select = document.getElementById("name");
 const result = document.getElementById("result");
 const recipient = document.getElementById("recipient");
-const error = document.getElementById("error");
+const errorBox = document.getElementById("error");
+const welcome = document.getElementById("welcome");
+
+// Sprawdzenie linku
+
+if (!token) {
+  button.disabled = true;
+  errorBox.style.display = "block";
+  errorBox.textContent =
+    "Nieprawidłowy link. Poproś organizatora o swój indywidualny link.";
+}
+
+// =====================================
+// LOSOWANIE
+// =====================================
 
 button.addEventListener("click", async () => {
-  const name = select.value;
 
-  error.textContent = "";
-  result.style.display = "none";
-
-  if (!name) {
-    error.textContent = "Najpierw wybierz swoje imię! 🎅";
-    return;
-  }
+  if (!token) return;
 
   button.disabled = true;
   button.textContent = "Losuję... 🎄";
 
+  errorBox.style.display = "none";
+
   try {
-    const { data, error: rpcError } = await db.rpc(
-      "draw_for",
-      { p_name: name }
+
+    const { data, error } = await db.rpc(
+      "draw_for_token",
+      {
+        p_token: token
+      }
     );
 
-    if (rpcError) throw rpcError;
+    if (error) {
+      throw error;
+    }
+
+    if (!data || !data.recipient) {
+      throw new Error("Nie otrzymano wyniku losowania.");
+    }
+
+    // Pokazanie wyniku
 
     recipient.textContent = data.recipient;
+
     result.style.display = "block";
+    welcome.style.display = "none";
 
-    button.textContent = "🎁 Twoje losowanie gotowe";
-    select.disabled = true;
+    button.textContent = "Los wykorzystany 🎁";
 
- } catch (err) {
-  console.error("BŁĄD LOSOWANIA:", err);
+    // Brak możliwości ponownego kliknięcia
 
-  error.textContent =
-    "Błąd: " + (err.message || JSON.stringify(err));
+    button.disabled = true;
 
-  button.disabled = false;
-  button.textContent = "🎁 Spróbuj ponownie";
-}
+  } catch (err) {
+
+    console.error("Błąd losowania:", err);
+
+    errorBox.style.display = "block";
+
+    if (
+      err.message &&
+      err.message.includes("już wykorzystany")
+    ) {
+      errorBox.textContent =
+        "🎅 Ten los został już wykorzystany. Nie można losować ponownie.";
+
+      button.textContent = "Los wykorzystany";
+      button.disabled = true;
+
+    } else if (
+      err.message &&
+      err.message.includes("Nieprawidłowy link")
+    ) {
+      errorBox.textContent =
+        "Ten link jest nieprawidłowy. Skontaktuj się z organizatorem.";
+
+      button.disabled = true;
+      button.textContent = "Nieprawidłowy link";
+
+    } else {
+
+      errorBox.textContent =
+        "Wystąpił problem: " +
+        (err.message || "Nieznany błąd") +
+        ". Spróbuj ponownie.";
+
+      button.disabled = false;
+      button.textContent = "🎁 Spróbuj ponownie";
+    }
+  }
+
 });
+
 </script>
+
 </body>
 </html>
