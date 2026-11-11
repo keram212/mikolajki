@@ -150,13 +150,15 @@ button.addEventListener("click", async () => {
     button.textContent = "🎁 Twoje losowanie gotowe";
     select.disabled = true;
 
-  } catch (err) {
-    console.error(err);
-    error.textContent =
-      "Coś poszło nie tak. Spróbuj ponownie za chwilę.";
-    button.disabled = false;
-    button.textContent = "🎁 Spróbuj ponownie";
-  }
+ } catch (err) {
+  console.error("BŁĄD LOSOWANIA:", err);
+
+  error.textContent =
+    "Błąd: " + (err.message || JSON.stringify(err));
+
+  button.disabled = false;
+  button.textContent = "🎁 Spróbuj ponownie";
+}
 });
 </script>
 </body>
