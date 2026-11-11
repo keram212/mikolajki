@@ -269,10 +269,16 @@ button.addEventListener("click", async () => {
 
     recipient.textContent = data.recipient;
 
-    result.style.display = "block";
-    welcome.style.display = "none";
+result.style.display = "block";
+welcome.style.display = "none";
 
-    button.textContent = "Los wykorzystany 🎁";
+if (data.already_drawn) {
+  button.textContent = "🎁 Twój wcześniejszy wynik";
+} else {
+  button.textContent = "🎁 Los został wykorzystany";
+}
+
+button.disabled = true;
 
     // Brak możliwości ponownego kliknięcia
 
